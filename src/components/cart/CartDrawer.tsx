@@ -7,13 +7,14 @@
  * Desktop (≥md): slides in from right as fixed panel
  */
 
-import { useEffect, useRef, useState } from "react";
+import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useCartStore } from "@/store/cartStore";
+import { useCartStore, CartItem } from "@/store/cartStore";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { loginWithGoogle, getCurrentUser } from "@/lib/firebase/auth";
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
 
 function formatPrice(n: number) {
     return new Intl.NumberFormat("en-IN", {
@@ -143,7 +144,7 @@ export default function CartDrawer() {
 // ---------------------------------------------------------------------------
 
 interface ContentProps {
-    items: ReturnType<typeof useCartStore>["items"];
+    items: CartItem[];
     count: number;
     subtotal: number;
     gst: number;

@@ -6,7 +6,7 @@ import { type GlobalSettingsDoc } from "@/types/index";
 interface SettingsState {
     settings: GlobalSettingsDoc | null;
     loading: boolean;
-    initialize: () => void;
+    initialize: () => () => void;
 }
 
 export const useSettingsStore = create<SettingsState>((set) => ({

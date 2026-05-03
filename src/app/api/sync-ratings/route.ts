@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebase/admin";
+import { FieldValue } from "firebase-admin/firestore";
 
 export async function GET() {
     try {
@@ -56,9 +57,9 @@ export async function GET() {
             } else {
                 // Item has NO real ratings in the orders collection -> Erase it
                 batch.update(itemRef, {
-                    ratingSum: adminDb.FieldValue.delete(),
-                    ratingCount: adminDb.FieldValue.delete(),
-                    ratingAverage: adminDb.FieldValue.delete()
+                    ratingSum: FieldValue.delete(),
+                    ratingCount: FieldValue.delete(),
+                    ratingAverage: FieldValue.delete()
                 });
             }
         }
