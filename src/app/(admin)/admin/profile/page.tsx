@@ -32,7 +32,7 @@ export default function AdminProfilePage() {
                             <h2 className="text-2xl font-bold text-foreground">{user?.displayName || "Super Admin"}</h2>
                             <p className="text-muted-foreground">{user?.email}</p>
                         </div>
-                        
+
                         <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                             <span className="px-3 py-1 bg-green-500/10 text-green-600 rounded-full text-xs font-bold uppercase tracking-wider">
                                 Active
@@ -51,7 +51,7 @@ export default function AdminProfilePage() {
                                 </div>
                                 <div>
                                     <p className="text-muted-foreground">Provider</p>
-                                    <p className="font-medium mt-0.5 capitalize">{user?.providerData?.[0]?.providerId.replace('.com', '') || "Email/Password"}</p>
+                                    {/* <p className="font-medium mt-0.5 capitalize">{user?.providerData?.[0]?.providerId.replace('.com', '') || "Email/Password"}</p> */}
                                 </div>
                             </div>
                         </div>
@@ -65,7 +65,7 @@ export default function AdminProfilePage() {
                     <h3 className="text-red-500 font-semibold">Danger Zone</h3>
                     <p className="text-sm text-muted-foreground">Sign out of the admin panel</p>
                 </div>
-                <button 
+                <button
                     onClick={logout}
                     className="px-6 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-colors shrink-0"
                 >
