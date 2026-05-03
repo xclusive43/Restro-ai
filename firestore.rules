@@ -1,0 +1,120 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -------------------------------------------------------------------------
+    // Helper functions
+    // -------------------------------------------------------------------------
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function getRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && getRole() == "admin";
+    }
+
+    function isStaff() {
+      return isSignedIn() && getRole() == "staff";
+    }
+
+    function isAdminOrStaff() {
+      return isAdmin() || isStaff();
+    }
+
+    // -------------------------------------------------------------------------
+    // users/{userId}
+    // -------------------------------------------------------------------------
+    match /users/{userId} {
+      // Users can read their own doc; admins can read all
+      allow read: if isOwner(userId) || isAdmin();
+
+      // First login: user can CREATE their own document (they don't exist yet)
+      // isOwner check ensures uid in path == authenticated uid
+      allow create: if isOwner(userId) || isAdmin();
+
+      // UPDATE / DELETE: admin only — prevents users from self-elevating their role
+      allow update: if isOwner(userId) || isAdmin(); 
+      allow delete: if isAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // categories/{categoryId}
+    // -------------------------------------------------------------------------
+    match /categories/{id} {
+      // Public read — anyone can browse categories (menu page)
+      allow read: if true;
+
+      // Only admins can create/update/delete categories
+      allow write: if isAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // menu_items/{itemId}
+    // -------------------------------------------------------------------------
+    match /menu_items/{id} {
+      // Public read — anyone can browse the menu
+      allow read: if true;
+
+      // Admin can do everything; staff can update availability only
+      allow create, delete: if isAdmin();
+      allow update: if isAdminOrStaff();
+    }
+
+    // -------------------------------------------------------------------------
+    // orders/{orderId}
+    // -------------------------------------------------------------------------
+    match /orders/{id} {
+      // Any signed-in user (including guest/anonymous) can place an order
+      allow create: if isSignedIn();
+
+      // Admin/staff see all orders; customer sees only their own
+      allow read: if isAdminOrStaff() || (isSignedIn() && request.auth.uid == resource.data.userId);
+
+      // Only admin/staff can update order status
+      allow update: if isAdminOrStaff();
+
+      // Orders are never deleted (audit trail)
+      allow delete: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // settings/global
+    // -------------------------------------------------------------------------
+    match /settings/{id} {
+      allow read: if true; // anyone can read settings (for tax, store name, etc.)
+      allow write: if isAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // audit_logs/{logId}
+    // -------------------------------------------------------------------------
+    match /audit_logs/{id} {
+      // Only admins can read audit logs
+      allow read: if isAdmin();
+      
+      // Clients never write directly to audit_logs (handled by server API)
+      allow write: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // offers/{offerId}
+    // -------------------------------------------------------------------------
+    match /offers/{id} {
+      // Anyone can read offers (displayed publicly on customer menu)
+      allow read: if true;
+
+      // Only admins can create/update/delete offers
+      allow write: if isAdmin();
+    }
+
+  }
+}

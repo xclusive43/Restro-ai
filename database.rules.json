@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "orders_live": {
+      "$orderId": {
+        ".read": "true",
+        ".write": "auth != null"
+      }
+    },
+
+    "$other": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}

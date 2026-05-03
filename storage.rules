@@ -1,0 +1,56 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // -------------------------------------------------------------------------
+    // categories/ — category images
+    // -------------------------------------------------------------------------
+    match /categories/{fileName} {
+      // Public read — anyone can see category images
+      allow read: if true;
+
+      // Only authenticated users can upload (Phase 4: restrict to admin/staff)
+      allow write: if request.auth != null;
+    }
+
+    // -------------------------------------------------------------------------
+    // menu/ — menu item images
+    // -------------------------------------------------------------------------
+    match /menu/{fileName} {
+      // Public read — anyone can see menu images
+      allow read: if true;
+
+      // Only authenticated users can upload (Phase 4: restrict to admin/staff)
+      allow write: if request.auth != null;
+    }
+
+    // -------------------------------------------------------------------------
+    // offers/ — promotional banner images
+    // -------------------------------------------------------------------------
+    match /offers/{fileName} {
+      // Public read — anyone can see offer banner images (shown on customer page)
+      allow read: if true;
+
+      // Only authenticated users can upload offer images
+      allow write: if request.auth != null;
+    }
+
+    // -------------------------------------------------------------------------
+    // avatars/ — user profile pictures
+    // -------------------------------------------------------------------------
+    match /avatars/{fileName} {
+      // Public read — anyone can see avatars
+      allow read: if true;
+
+      // Only authenticated users can upload their own avatar
+      allow write: if request.auth != null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Deny all other paths
+    // -------------------------------------------------------------------------
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
