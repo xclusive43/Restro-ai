@@ -75,7 +75,7 @@ export default function LoginPage() {
         const normalizedRole = (role ?? "").toLowerCase();
         if (normalizedRole === "admin") return "/admin";
         if (normalizedRole === "staff") return "/staff/dashboard";
-        return "/menu";
+        return "/";
     }
 
     /** After a successful Firebase Auth call, fetch role from Firestore and redirect */
